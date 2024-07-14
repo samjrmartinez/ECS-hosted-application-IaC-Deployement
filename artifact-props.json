@@ -1,0 +1,11 @@
+{
+  "files": [
+    {
+      "pattern": "target/ECS-hosted-application-IaC-Deployement-*.jar",
+      "target": "libs-release-local/com/sammartinez/ECS-hosted-application-IaC-Deployement/1.0.0/",
+      "exclusions": [
+        "target/original-*.jar"
+      ]
+    }
+  ]
+}

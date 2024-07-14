@@ -1,0 +1,22 @@
+# cat docker-compose-prod.yml
+version: '3.8'
+services:
+  rn-incentive-api:
+    image: ${API_IMAGE_NAME}
+    env_file:
+      - .env
+    build:
+      context: ..
+      dockerfile: Dockerfile-local
+    ports:
+      - "8096:8096"
+    networks:
+      - ${NETWORK_NAME}
+    volumes:
+      - ~/.aws/:/root/.aws:ro # aws credentials file
+
+networks:
+  rn_network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+    external: true # required to join the existing network with the same name

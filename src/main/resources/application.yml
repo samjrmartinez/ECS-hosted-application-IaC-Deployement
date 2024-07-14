@@ -1,0 +1,102 @@
+# default settings for all profiles
+server:
+  address: 0.0.0.0
+  port: 8096
+  servlet:
+    context-path: /api/v1/custom
+
+spring:
+  application:
+    name: custom-service
+
+  datasource:
+    hikari:
+      # connection timeout
+      connection-timeout: 20000
+      # min idle connections
+      minimum-idle: 5
+      # max pool size
+      maximum-pool-size: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+      driver-class-name: org.postgresql.Driver
+
+  jackson:
+    default-property-inclusion: non_null
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+    serialization:
+      write-dates-as-timestamps: false
+      fail_on_empty_beans: false
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    database: POSTGRESQL
+    open-in-view: true
+    hibernate.ddl-auto: none
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual_creation: true
+  webapp:
+    cors:
+      origins: "*"
+
+# settings for local profile
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    incentive:
+      url: jdbc:postgresql://localhost:5433/custom
+      username: custom
+      password: password
+
+# settings for docker profile
+---
+spring:
+  config:
+    activate:
+      on-profile: docker-local
+  datasource:
+    incentive:
+      url: jdbc:postgresql://host.docker.internal:5433/custom
+      username: custom
+      password: password
+
+# settings for ECS non-prod profile
+---
+spring:
+  config:
+    activate:
+      on-profile: ecs-non-prod
+    import:
+      - aws-secretsmanager:ecs-rds-[region]-postgres-s-custom?prefix=postgres_
+  datasource:
+    incentive:
+      url: jdbc:postgresql://${host}:${port}/custom
+      username: ${username}
+      password: ${password}
+
+# settings for ECS prod profile
+---
+spring:
+  config:
+    activate:
+      on-profile: ecs-prod
+    import:
+      - aws-secretsmanager:ecs-rds-[region]-postgres-p-custom?prefix=postgres_
+  datasource:
+    incentive:
+      url: jdbc:postgresql://${host}:${port}/custom
+      username: ${username}
+      password: ${password}

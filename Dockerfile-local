@@ -1,0 +1,11 @@
+FROM maven:3.9.7 AS MAVEN_TOOL_CHAIN
+COPY pom.xml /tmp/
+COPY src /tmp/src/
+WORKDIR /tmp/
+RUN mvn clean package -U
+
+FROM openjdk:17
+COPY --from=MAVEN_TOOL_CHAIN /tmp/target/ECS-hosted-application-IaC-Deployment-*.jar /opt/jboss/wildfly/standalone/deployments/custom.jar
+
+CMD ["java", "-jar", "-Dserver.port=8096", "-Dspring.profiles.active=docker-local", "/opt/jboss/wildfly/standalone/deployments/custom.jar"]
+EXPOSE 8096
